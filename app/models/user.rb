@@ -1,13 +1,15 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  devise :database_authenticatable, :registerable, :rememberable
 
   validates :username, uniqueness: true, presence: true
 
-  has_many :room_messages,
-           dependent: :destroy
+  has_many :room_messages, dependent: :destroy
+
+  before_create :set_email
+
+  def set_email
+    self.email = "noemail#{self.class.count+1}@codeboxx.biz"
+  end
 
   def gravatar_url
     gravatar_id = Digest::MD5::hexdigest(email).downcase
